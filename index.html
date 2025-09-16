@@ -420,16 +420,18 @@
 
       // Depoimentos
       const grid = document.getElementById("testimonials-grid");
-      testemunhos.forEach(t => {
-        const card = document.createElement("div");
-        card.className = "testimonial-card";
-        card.innerHTML = `
-          <i class="fas fa-quote-left"></i>
-          <p>${t.text}</p>
-          <p><strong>— ${t.author}</strong></p>
-        `;
-        grid.appendChild(card);
-      });
+      if (testemunhos) {
+        testemunhos.forEach(t => {
+          const card = document.createElement("div");
+          card.className = "testimonial-card";
+          card.innerHTML = `
+            <i class="fas fa-quote-left"></i>
+            <p>${t.text}</p>
+            <p><strong>— ${t.author}</strong></p>
+          `;
+          grid.appendChild(card);
+        });
+      }
 
       // Formulário
       document.getElementById("donationForm").addEventListener("submit", function(e) {
@@ -446,7 +448,7 @@
         if (method === "gmail") {
           window.location.href = `mailto:${data.footer.email}?subject=Doação&body=${encodeURIComponent(finalMsg)}`;
         } else if (method === "whatsapp") {
-          const phone = data.footer.whatsapp.replace(/\D/g,"");
+          const phone = data.footer.phone.replace(/\D/g,""); // usa o phone do rodapé
           window.open(`https://wa.me/${phone}?text=${encodeURIComponent(finalMsg)}`, "_blank");
         } else {
           alert("Escolha uma forma de doação.");
