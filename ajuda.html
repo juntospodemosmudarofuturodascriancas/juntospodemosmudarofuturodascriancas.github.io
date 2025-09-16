@@ -97,9 +97,60 @@
       transition: .3s;
     }
     #social-links a:hover { color: #ffcc00; }
+
+    /* Tela de carregamento centralizada */
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #f8f9fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 3000;
+      transition: opacity 0.8s ease;
+    }
+    #progress-container {
+      width: 80%;
+      max-width: 400px;
+      height: 20px;
+      background: #ddd;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    #progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #1e5799, #207cca, #1e5799);
+      background-size: 200% 100%;
+      border-radius: 12px;
+      animation: gradientMove 2s infinite linear;
+      transition: width 0.4s ease;
+    }
+    #progress-text {
+      margin-top: 1rem;
+      font-weight: bold;
+      color: #1e5799;
+    }
+    @keyframes gradientMove {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
   </style>
 </head>
 <body>
+
+  <!-- Tela de Carregamento -->
+  <div id="loading-screen">
+    <div id="progress-container">
+      <div id="progress-bar"></div>
+    </div>
+    <div id="progress-text">0%</div>
+  </div>
 
   <!-- Header -->
   <header>
@@ -115,7 +166,6 @@
   <section id="depoimentos">
     <div class="container">
       <h1>Quem Recebeu Ajuda</h1>
-      <p>Por favor espere o servidor carregar!!!</p>
       <div id="testimonials-grid"></div>
     </div>
   </section>
@@ -148,10 +198,42 @@
       }
     }
 
+    function updateProgress(percent) {
+      document.getElementById("progress-bar").style.width = percent + "%";
+      document.getElementById("progress-text").textContent = percent + "%";
+    }
+
     async function init() {
+      let progress = 0;
+      updateProgress(progress);
+
+      // Simulação de progresso inicial (para dar fluidez)
+      const fakeInterval = setInterval(() => {
+        if (progress < 90) {
+          progress += 5;
+          updateProgress(progress);
+        }
+      }, 200);
+
+      // Carregar JSONs
       const testimonials = await loadJSON("ajuda.json");
       const data = await loadJSON("ajd.json");
+
+      clearInterval(fakeInterval);
+
+      // Finaliza a barra até 100%
+      progress = 100;
+      updateProgress(progress);
+
       if (!testimonials || !data) return;
+
+      // Esconde a tela de loading após a barra completar
+      setTimeout(() => {
+        document.getElementById("loading-screen").style.opacity = "0";
+        setTimeout(() => {
+          document.getElementById("loading-screen").style.display = "none";
+        }, 800);
+      }, 600);
 
       // Rodapé
       document.getElementById("footer-email").textContent = data.footer.email;
